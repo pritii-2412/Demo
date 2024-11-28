@@ -1,0 +1,57 @@
+package com.cg.service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.cg.model.Product;
+import com.cg.repository.ProductRepository;
+
+@Service
+public class ProductService implements IProductService{
+
+	@Autowired
+	ProductRepository productrepo;
+	@Override
+	public List<Product> findAllProducts() {
+		return productrepo.findAll();
+		
+	}
+	
+	public Optional<Product> findProductById(int pid) {
+		return productrepo.findById(pid);
+	}
+
+	
+	public Product CreateProduct(Product p) {
+		return productrepo.save(p);
+	}
+	public String DeleteProductbyId(int pid) {
+		if (productrepo.existsById(pid)) {
+			productrepo.deleteById(pid);;
+	         return "deleted";
+	    } else {
+	    	 return "id not found";
+	    }
+	}
+	public Product UpdateData(Product p) {	
+		return productrepo.save(p);
+	}
+	@Override
+	public List<Product >getProductByName(String Pname){
+		return productrepo.findAllByPname(Pname);
+	}
+	@Override
+	public int getCountByProduct(String pname) {
+		return productrepo.getCountByProduct(pname);
+	}
+}
+
+
+
+
+
+

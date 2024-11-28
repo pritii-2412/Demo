@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+    <fullyQualifiedTypeName name="org.springframework.web.bind.annotation.ExceptionHandler"/>
+    <fullyQualifiedTypeName name="java.lang.Exception"/>
+    <fullyQualifiedTypeName name="org.springframework.web.context.request.WebRequest"/>
+    <fullyQualifiedTypeName name="org.springframework.http.HttpStatus"/>
+    <fullyQualifiedTypeName name="com.cg.exception.GlobalExceptionHandler"/>
+    <fullyQualifiedTypeName name="com.cg.model.UserInfo"/>
+    <fullyQualifiedTypeName name="com.cg.config.UserInfoUserDetails"/>
+    <fullyQualifiedTypeName name="com.cg.service.UserInfoUserDetailsService"/>
+</qualifiedTypeNameHistroy>

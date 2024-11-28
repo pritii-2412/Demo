@@ -1,0 +1,176 @@
+package com.cg.controller;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.cg.exception.BadRequestException;
+import com.cg.exception.ResourceNotFoundException;
+import com.cg.model.Order;
+import com.cg.service.IOrderService;
+import jakarta.validation.Valid;
+
+@RequestMapping("/api")
+@RestController
+public class OrderController {
+	
+
+	
+	@Autowired
+	IOrderService orderservice;
+	
+
+	
+	@GetMapping(path = "/orders", produces = {MediaType.APPLICATION_JSON_VALUE})
+	public List<Order> getOrders(){
+		return orderservice.findAllOrders();
+	}
+	
+	
+	
+	@GetMapping("/orders/{id}")
+	Optional<Order>findByOrderIdFromDBWithException(@PathVariable int id) throws ResourceNotFoundException
+	{	Optional<Order> order = orderservice.findOrderById(id);
+	
+    	order.orElseThrow(() -> new ResourceNotFoundException("Order not found for this id :: " + id));
+    	System.out.println(id);
+		return order;
+	}
+	
+	
+
+	
+	@GetMapping("/orders/{orderno}")
+	   public List<Order> getMyOrderByName(@PathVariable int orderno) {
+		   return orderservice.getOrderByOrderno(orderno);
+	   }
+	   
+	
+	
+	
+	@PostMapping("/orders/{id}")
+	   public Order createMyOrder1(@PathVariable int id ,@RequestBody Order order) throws BadRequestException{
+		if (order == null) {
+	        throw new BadRequestException("Order cannot be null.");
+	    }
+		if ("@".equals(order.getOid())) {
+		    throw new BadRequestException("Order ID cannot be '@'.");
+		}
+		
+	 		return orderservice.createOrder(order);
+	 	}
+	
+
+	
+//	@DeleteMapping(path = "/orders/{id}") 
+//	   public String deleteOrderId(@PathVariable int id) throws ResourceNotFoundException {
+//		
+//		if(id == null) {
+//			throw new 
+//		}
+//	       String result = orderservice.deleteOrder(id);
+//	       return result; // Returns true if deleted, false if not found
+//	   }
+	
+	
+	@DeleteMapping(path = "/orders/{id}")
+	public String deleteOrderId(@PathVariable String id) throws BadRequestException {
+	    // Check if the ID is numeric
+	    if (!id.matches("\\d+")) {
+	        throw new BadRequestException("Order ID must be a numeric value.");
+	    }
+
+	  
+
+	    // Parse the ID to Integer
+	    Integer orderId = Integer.valueOf(id);
+
+	    // Attempt to delete the order
+	    String result = orderservice.deleteOrder(orderId);
+
+	    // Handle case where the order is not found
+	    if (result == null) {
+	        throw new BadRequestException("Order not found for ID: " + orderId);
+	    }
+
+	    return result;
+	}
+
+	
+	@PutMapping(path = "/orders/{id}")
+	   public String updateOrder(@PathVariable int id, @RequestBody Order order) {
+	       return orderservice.updateOrder(id, order);
+	   }
+	
+	
+	 
+	
+}
+
+
+
+
+
+
+
+
+
+
+//@PostMapping("/orders")
+//public Order createMyOrder(@Valid @RequestBody Order order)
+//{
+//		return orderservice.createOrder(order);
+//	}
+
+
+
+
+//@Autowired
+//IProductService productService; //(this is used to inject dependencies automatically in ordercontroller)
+// 
+////1.method to call product  endpoint to list all products from order api endpoint
+//@GetMapping("/orders/products")
+//  public List<Product> getAllProducts() {
+//      return productService.findAllProducts();  
+//  }
+
+
+////8.to fetching all orders by dto
+//	@GetMapping("/orders/dto1")        
+// public List<OrderDTO> getAllOrders() {
+//     return orderservice.findAllOrders()
+//                         .stream()
+//                         .map(OrderDTO::fromEntity)  // Convert to ProductDTO
+//                         .collect(Collectors.toList());
+// }
+//	
+//	
+////9. fetching all orders by dto filtering by id
+//	@GetMapping("/orders/dto/{id}")
+// public OrderDTO getOrderById(@PathVariable int id) throws ResourceNotFoundException {
+//     return orderservice.findOrderById(id)
+//                         .map(OrderDTO::fromEntity)  
+//                         .orElseThrow(() -> new ResourceNotFoundException("Order not found for this id :: " + id));
+// }
+//	
+//	
+////10. Adding data to table by dto
+//@PostMapping("/orders/dto")
+//public OrderDTO createOrder(@Valid @RequestBody OrderDTO orderDTO)
+//{
+//       Order order = orderDTO.toEntity();  // Convert DTO to Entity
+//        Order createdOrder = orderservice.createOrder(order);
+//        return OrderDTO.fromEntity(createdOrder);  // Return as DTO
+//}
+//

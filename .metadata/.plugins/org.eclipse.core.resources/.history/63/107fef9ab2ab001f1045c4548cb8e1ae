@@ -1,0 +1,46 @@
+package com.cg.controller;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.cg.model.Product;
+import com.cg.service.IProductService;
+
+
+@RequestMapping("/api")
+@RestController
+public class ProductController {
+	
+	@Autowired
+	IProductService productservice;
+	
+	
+	@GetMapping(path = "/products", produces = {MediaType.APPLICATION_JSON_VALUE})
+	public List<Product> getProducts(){
+		return productservice.findAllProducts();
+	}
+	
+	@GetMapping("/hello")
+	public String sayHello() {
+		return "Hello Application";
+	}
+    
+   @GetMapping(path = "/products/{id}")
+   public Optional<Product>getByProductId(@PathVariable int id){
+		return productservice.findProductById(id);
+	}
+   
+    @PostMapping("/products")   //to add product in postman without manually inserting into postgres
+  	public Product createMyProduct(@RequestBody Product p) {
+  		return productservice.CreateProduct(p);
+  	}
+}

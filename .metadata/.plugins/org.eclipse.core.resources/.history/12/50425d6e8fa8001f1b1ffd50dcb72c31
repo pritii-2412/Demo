@@ -1,0 +1,131 @@
+package com.cg.controller;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import com.cg.exception.ResourceNotFoundException;
+import com.cg.model.Order;
+import com.cg.service.IOrderService;
+import jakarta.validation.Valid;
+
+@RequestMapping("/api")
+@RestController
+public class OrderController {
+	
+
+	
+	@Autowired
+	IOrderService orderservice;
+	
+//	
+	
+	//2. fetching all orders
+	@GetMapping(path = "/orders", produces = {MediaType.APPLICATION_JSON_VALUE})
+	public List<Order> getOrders(){
+		return orderservice.findAllOrders();
+	}
+	
+	//3.fetching all orders filtering by id and throwing exception if id not present
+	@GetMapping("/orders/{id}")
+	Optional<Order>findByOrderIdFromDBWithException(@PathVariable int id) throws ResourceNotFoundException
+	{	Optional<Order> order = orderservice.findOrderById(id);
+	
+    	order.orElseThrow(() -> new ResourceNotFoundException("Order not found for this id :: " + id));
+    	System.out.println(id);
+		return order;
+	}
+	
+	//4.fetching all orders filtering by order no
+	@GetMapping("/orders/orderno/{orderno}")
+	   public List<Order> getMyOrderByName(@PathVariable int orderno) {
+		   return orderservice.getOrderByOrderno(orderno);
+	   }
+	   
+	//5.Adding data to ordertable
+	@PostMapping("/orders")
+	   public Order createMyOrder(@Valid @RequestBody Order order)
+	   {
+	 		return orderservice.createOrder(order);
+	 	}
+	
+
+	//6.Deleteing data filtering by id
+	@DeleteMapping(path = "/orders/delete/{id}")
+	   public String deleteOrderId(@PathVariable int id) {
+	       String result = orderservice.deleteOrder(id);
+	       return result; // Returns true if deleted, false if not found
+	   }
+	
+	
+	//7. Updating existing data of ordertable filtering by id
+	@PutMapping(path = "/orders/{id}")
+	   public String updateOrder(@PathVariable int id, @RequestBody Order order) {
+	       return orderservice.updateOrder(id, order);
+	   }
+	
+	
+	 
+	 //8.to fetching all orders by dto
+	 	@GetMapping("/orders/dto1")        
+	     public List<OrderDTO> getAllOrders() {
+	         return orderservice.findAllOrders()
+	                             .stream()
+	                             .map(OrderDTO::fromEntity)  // Convert to ProductDTO
+	                             .collect(Collectors.toList());
+	     }
+	 	
+	 	
+	//9. fetching all orders by dto filtering by id
+	 	@GetMapping("/orders/dto/{id}")
+	     public OrderDTO getOrderById(@PathVariable int id) throws ResourceNotFoundException {
+	         return orderservice.findOrderById(id)
+	                             .map(OrderDTO::fromEntity)  
+	                             .orElseThrow(() -> new ResourceNotFoundException("Order not found for this id :: " + id));
+	     }
+	 	
+	 	
+	//10. Adding data to table by dto
+	@PostMapping("/orders/dto")
+	public OrderDTO createOrder(@Valid @RequestBody OrderDTO orderDTO)
+	{
+		       Order order = orderDTO.toEntity();  // Convert DTO to Entity
+		        Order createdOrder = orderservice.createOrder(order);
+		        return OrderDTO.fromEntity(createdOrder);  // Return as DTO
+	}
+  
+   
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//@Autowired
+//IProductService productService; //(this is used to inject dependencies automatically in ordercontroller)
+// 
+////1.method to call product  endpoint to list all products from order api endpoint
+//@GetMapping("/orders/products")
+//  public List<Product> getAllProducts() {
+//      return productService.findAllProducts();  
+//  }

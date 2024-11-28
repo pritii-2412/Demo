@@ -1,0 +1,18 @@
+package com.cg.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import com.cg.model.Product;
+
+public interface IProductService {
+	
+	List<Product> findAllProducts() ;
+	Optional<Product> findProductById(int pid);
+	public Product CreateProduct(Product p);
+	public String DeleteProductbyId(int pid);
+	public Product UpdateData(Product p);
+	List<Product> getProductByName(String name);
+	int getCountByProduct(String name);
+
+}
